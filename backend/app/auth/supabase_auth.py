@@ -2,12 +2,14 @@
 Supabase JWT verification for FastAPI route protection.
 Supabase issues HS256 JWTs signed with the project JWT secret.
 """
+import os
+import jwt
 from fastapi import Header, HTTPException
-from app.database import get_supabase
+from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 
 async def get_current_user_id(authorization: str = Header(...)) -> str:
     """
-    FastAPI dependency — verifies a Supabase JWT by calling Supabase Auth.
+    FastAPI dependency — verifies a Supabase JWT locally via PyJWT.
     Returns the user UUID on success.
     Raises HTTP 401 on any auth failure.
     """
@@ -19,15 +21,19 @@ async def get_current_user_id(authorization: str = Header(...)) -> str:
     token = authorization[7:]
 
     try:
-        db = get_supabase()
-        response = db.auth.get_user(token)
-    except Exception as exc:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Token verification failed: {exc}",
+        payload = jwt.decode(
+            token,
+            os.environ["SUPABASE_JWT_SECRET"],
+            algorithms=["HS256"],
+            audience="authenticated",
         )
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired.")
+    except InvalidTokenError as exc:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {exc}")
 
-    if not response.user:
-        raise HTTPException(status_code=401, detail="Invalid or expired token.")
+    user_id: str | None = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Token missing user ID.")
 
-    return response.user.id
+    return user_id
