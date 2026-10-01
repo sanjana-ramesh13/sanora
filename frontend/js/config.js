@@ -15,5 +15,10 @@ const SUPABASE_URL = 'https://eaadcihxqkdctvhrhybn.supabase.co';           // e.
 // eslint-disable-next-line no-unused-vars
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhYWRjaWh4cWtkY3R2aHJoeWJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NzkyNTMsImV4cCI6MjEwNjM1NTI1M30.VfbRvkp1fC4U9Op-OJ2lCKrk4Gn65nwGwpi8kAPhyLM'; // "anon" public key from Settings → API
 
+// Determine if the frontend is running locally
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
 // eslint-disable-next-line no-unused-vars
-const BACKEND_URL = 'http://localhost:8000';         // Change to Railway/Render URL in production
+const BACKEND_URL = isLocal 
+  ? 'http://localhost:8000' 
+  : 'https://sanora-backend.onrender.com'; // Update this to your actual Render URL after deploying the backend!
