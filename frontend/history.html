@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outfit History - Sanora</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-brand">Sanora</a>
+    <div class="nav-links">
+      <a href="style.html" class="nav-link">Preferences</a>
+      <a href="closet.html" class="nav-link">My Closet</a>
+      <a href="history.html" class="nav-link active">History</a>
+      <div id="nav-avatar-container"></div>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top: 2rem; max-width: 800px;">
+    <div style="margin-bottom: 3rem;">
+      <h1 style="font-family: var(--font-serif); font-size: 2.5rem;">Outfit History <span id="history-count" style="font-family: var(--font-body); font-size: 1rem; color: var(--text-muted); font-weight: normal; margin-left: 0.5rem;">(0 entries)</span></h1>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" style="text-align: center; padding: 4rem 0;">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- History List -->
+    <div id="history-list" class="hidden"></div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state hidden">
+      <span class="empty-state-icon">📖</span>
+      <h3 class="empty-state-title">No outfits logged yet</h3>
+      <p class="empty-state-desc">When you get an outfit recommendation, mark it as worn to save it here.</p>
+      <a href="index.html" class="btn btn-primary">Get an Outfit</a>
+    </div>
+  </main>
+
+  <div id="delete-modal" class="modal-overlay" onclick="closeDeleteModal(event)">
+    <div class="modal">
+      <h2 class="modal-title" style="font-family: var(--font-serif); margin-bottom: 0.5rem; color: var(--text);">Delete Outfit?</h2>
+      <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem;">Are you sure you want to delete this outfit from your history? This action cannot be undone.</p>
+      
+      <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()" style="flex: 1; border-radius: var(--radius-full);">Cancel</button>
+        <button class="btn btn-primary" id="confirm-delete-btn" style="flex: 1; border-radius: var(--radius-full);">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/history.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Closet - Sanora</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-brand">Sanora</a>
+    <div class="nav-links">
+      <a href="style.html" class="nav-link">Preferences</a>
+      <a href="closet.html" class="nav-link active">My Closet</a>
+      <a href="history.html" class="nav-link">History</a>
+      <div id="nav-avatar-container"></div>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+      <div>
+        <h1 style="font-family: var(--font-serif); font-size: 2.5rem;">My Closet <span id="item-count" style="font-family: var(--font-body); font-size: 1rem; color: var(--text-muted); font-weight: normal; margin-left: 0.5rem;">(0 items)</span></h1>
+      </div>
+      <button class="btn btn-primary" onclick="openModal()">+ Add Item</button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 1rem; margin-bottom: 1rem;">
+      <button class="filter-pill active" onclick="setFilter(this, 'all')">All</button>
+      <button class="filter-pill" onclick="setFilter(this, 'top')">Tops</button>
+      <button class="filter-pill" onclick="setFilter(this, 'bottom')">Bottoms</button>
+      <button class="filter-pill" onclick="setFilter(this, 'dupatta')">Dupattas</button>
+      <button class="filter-pill" onclick="setFilter(this, 'footwear')">Footwear</button>
+      <button class="filter-pill" onclick="setFilter(this, 'accessory')">Accessories</button>
+      <button class="filter-pill" onclick="setFilter(this, 'outerwear')">Outerwear</button>
+      <button class="filter-pill" onclick="setFilter(this, 'full-outfit')">Full Outfits</button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-grid" class="clothing-grid">
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+      <div class="skeleton" style="aspect-ratio: 3/4;"></div>
+    </div>
+
+    <!-- Main Grid -->
+    <div id="clothing-grid" class="clothing-grid hidden"></div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state hidden">
+      <span class="empty-state-icon">👗</span>
+      <h3 class="empty-state-title">Your closet is empty</h3>
+      <p class="empty-state-desc">Start adding items to get personalized AI outfit recommendations.</p>
+      <button class="btn btn-primary" onclick="openModal()">Add Your First Item</button>
+    </div>
+  </main>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="upload-modal" onclick="closeModal(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Add to Closet</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="upload-form" onsubmit="submitItem(event)">
+          <!-- Image Upload -->
+          <div class="form-group">
+            <div id="upload-zone" class="upload-zone" onclick="triggerFileInput()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+              <div id="upload-text">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📸</div>
+                <div style="font-weight: 500; color: var(--primary);">Click to upload or drag & drop</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">JPG, PNG or WEBP (max 5MB)</div>
+              </div>
+              <img id="upload-preview" class="upload-preview hidden" alt="Preview">
+            </div>
+            <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(this)">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" id="item-name" class="form-input" placeholder="e.g. Pink Silk Saree" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select id="item-category" class="form-select" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="top">Top (Kurti, Blouse, Shirt)</option>
+              <option value="bottom">Bottom (Lehenga, Pants, Skirt)</option>
+              <option value="dupatta">Dupatta / Scarf</option>
+              <option value="footwear">Footwear</option>
+              <option value="accessory">Accessory (Jewelry, Bag)</option>
+              <option value="outerwear">Outerwear (Jacket, Coat)</option>
+              <option value="full-outfit">Full Outfit (Saree, Dress)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Style (Multi-select)</label>
+            <div class="pill-group" id="style-pills">
+              <div class="pill" onclick="togglePill(this, 'style_type')">Traditional</div>
+              <div class="pill" onclick="togglePill(this, 'style_type')">Western</div>
+              <div class="pill" onclick="togglePill(this, 'style_type')">Indo-Western</div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Primary Color</label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <div id="color-swatch" style="width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: #eee;"></div>
+                <input type="text" id="item-color" class="form-input" placeholder="#hex or name" oninput="updateColorSwatch(this)" style="flex-grow: 1;">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Season (Multi-select)</label>
+            <div class="pill-group" id="season-pills">
+              <div class="pill selected" onclick="togglePill(this, 'season')">All Season</div>
+              <div class="pill" onclick="togglePill(this, 'season')">Summer</div>
+              <div class="pill" onclick="togglePill(this, 'season')">Winter</div>
+              <div class="pill" onclick="togglePill(this, 'season')">Monsoon</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Occasion (Multi-select)</label>
+            <div class="pill-group" id="occasion-pills">
+              <div class="pill" onclick="togglePill(this, 'occasion')">Casual</div>
+              <div class="pill" onclick="togglePill(this, 'occasion')">Festive</div>
+              <div class="pill" onclick="togglePill(this, 'occasion')">Formal</div>
+              <div class="pill" onclick="togglePill(this, 'occasion')">Party</div>
+              <div class="pill" onclick="togglePill(this, 'occasion')">Work</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tags</label>
+            <input type="text" id="item-tags" class="form-input" placeholder="e.g. silk, handloom, comfortable">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" form="upload-form" class="btn btn-primary" id="submit-btn">Add to Closet</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/closet.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Outfit - Sanora</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-brand">Sanora</a>
+    <div class="nav-links">
+      <a href="style.html" class="nav-link">Preferences</a>
+      <a href="closet.html" class="nav-link">My Closet</a>
+      <a href="history.html" class="nav-link">History</a>
+      <div id="nav-avatar-container"></div>
+    </div>
+  </nav>
+
+  <main class="container" style="padding-top: 3rem; max-width: 800px;">
+    <!-- Loading State -->
+    <div id="loading-state" style="text-align: center; padding: 4rem 0;">
+      <div class="spinner" style="margin-bottom: 2rem;"></div>
+      <p style="font-family: var(--font-serif); font-size: 1.5rem; font-style: italic; color: var(--text-muted);">Finding your perfect outfit...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section" class="hidden slide-up">
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 id="page-title" style="font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 0.5rem;">Your Look</h1>
+        <span id="page-subtitle" class="badge"></span>
+      </div>
+
+      <div id="outfits-container"></div>
+      
+      <div style="display: flex; justify-content: center; margin-top: 2rem; margin-bottom: 4rem;">
+        <a href="style.html" class="btn btn-ghost">&larr; Change Style</a>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="empty-state hidden slide-up">
+      <span class="empty-state-icon">😕</span>
+      <h3 class="empty-state-title" id="error-title">Oops!</h3>
+      <p class="empty-state-desc" id="error-desc">We couldn't generate an outfit right now.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="closet.html" class="btn btn-primary">Go to Closet</a>
+        <a href="index.html" class="btn btn-ghost">&larr; Back</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/outfit.js"></script>
+</body>
+</html>

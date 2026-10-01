@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Style - Sanora</title>
+  <meta name="description" content="Tell Sanora what you're wearing today and get outfit recommendations from your wardrobe.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Style grid — reuses existing CSS variables ── */
+
+    .style-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    /* Each style card extends .category-card from style.css */
+    .style-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .style-card:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-pink);
+    }
+    .style-card.selected {
+      border-color: var(--primary);
+      background: var(--badge-bg);
+      box-shadow: var(--shadow-pink);
+      transform: translateY(-3px);
+    }
+    .style-card-emoji {
+      font-size: 2.25rem;
+      line-height: 1;
+    }
+    .style-card-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .style-card-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Page heading area */
+    .style-heading {
+      margin: 3rem 0 0.5rem;
+      font-family: var(--font-serif);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      color: var(--text);
+    }
+    .style-subheading {
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    /* CTA area */
+    .style-cta {
+      text-align: center;
+      margin: 2rem 0 4rem;
+    }
+
+    @media (max-width: 480px) {
+      .style-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ──────────────────────────────────────────────── -->
+  <nav>
+    <a href="style.html" class="nav-brand">Sanora</a>
+    <div class="nav-links">
+      <a href="style.html" class="nav-link active">Preferences</a>
+      <a href="closet.html" class="nav-link">My Closet</a>
+      <a href="history.html" class="nav-link">History</a>
+      <div id="nav-avatar-container"></div>
+    </div>
+  </nav>
+
+  <!-- ── Main Content ────────────────────────────────────────────── -->
+  <main class="container" style="max-width: 700px;">
+
+    <div class="slide-up">
+      <h1 class="style-heading">What are you wearing today?</h1>
+      <p class="style-subheading">Pick a style and Sanora will build an outfit from your wardrobe.</p>
+    </div>
+
+    <!-- ── Style Cards Grid ──────────────────────────────────────── -->
+    <div class="style-grid slide-up" style="animation-delay: 0.1s;" id="style-grid">
+
+      <div class="style-card" onclick="selectStyle(this, 'traditional')">
+        <div class="style-card-emoji">🌸</div>
+        <div class="style-card-name">Traditional</div>
+        <div class="style-card-desc">Sarees, Kurtis, Lehengas</div>
+      </div>
+
+      <div class="style-card" onclick="selectStyle(this, 'western')">
+        <div class="style-card-emoji">✨</div>
+        <div class="style-card-name">Western</div>
+        <div class="style-card-desc">Dresses, Jeans, Tops</div>
+      </div>
+
+      <div class="style-card" onclick="selectStyle(this, 'indo-western')">
+        <div class="style-card-emoji">🌿</div>
+        <div class="style-card-name">Indo-Western</div>
+        <div class="style-card-desc">Fusion &amp; Contemporary</div>
+      </div>
+
+      <div class="style-card" onclick="selectStyle(this, 'casual')">
+        <div class="style-card-emoji">👟</div>
+        <div class="style-card-name">Casual</div>
+        <div class="style-card-desc">Everyday Comfortable</div>
+      </div>
+
+      <div class="style-card" onclick="selectStyle(this, 'college')">
+        <div class="style-card-emoji">🎓</div>
+        <div class="style-card-name">College</div>
+        <div class="style-card-desc">Trendy &amp; Young</div>
+      </div>
+
+      <div class="style-card" onclick="selectStyle(this, 'formal')">
+        <div class="style-card-emoji">💼</div>
+        <div class="style-card-name">Formal</div>
+        <div class="style-card-desc">Office &amp; Professional</div>
+      </div>
+
+      <div class="style-card" onclick="selectStyle(this, 'party')">
+        <div class="style-card-emoji">🎉</div>
+        <div class="style-card-name">Party</div>
+        <div class="style-card-desc">Glam &amp; Statement</div>
+      </div>
+
+    </div>
+
+    <!-- ── CTA Button ────────────────────────────────────────────── -->
+    <div class="style-cta slide-up" style="animation-delay: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <button
+          id="find-outfit-btn"
+          class="btn btn-primary btn-lg"
+          onclick="goToOutfit()"
+          disabled
+          style="min-width: 220px; opacity: 0.5; cursor: not-allowed; transition: var(--transition);"
+        >
+          Find My Outfit →
+        </button>
+        
+        <button
+          class="btn btn-outline btn-lg"
+          onclick="goToSurpriseOutfit()"
+          style="min-width: 220px; transition: var(--transition);"
+        >
+          Surprise Me 🎲
+        </button>
+      </div>
+      <p id="style-hint" style="font-size: 0.85rem; color: var(--text-muted);">
+        Select a style above to continue, or let us surprise you!
+      </p>
+    </div>
+
+  </main>
+
+  <div id="toast-container"></div>
+
+  <!-- ── Scripts ───────────────────────────────────────────────────── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/style.js"></script>
+
+</body>
+</html>

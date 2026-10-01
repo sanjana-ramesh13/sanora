@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanora - Your AI Stylist</title>
+  <meta name="description" content="Sanora is your personal AI stylist. Get outfit recommendations from your own wardrobe, curated just for you.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Landing-specific layout — reuses all existing CSS variables */
+    .landing-hero {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      gap: 2rem;
+    }
+
+    .landing-logo {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 15vw, 10rem);
+      color: var(--primary);
+      line-height: 1;
+      /* Soft pink glow under the logo */
+      text-shadow: 0 0 60px var(--primary-glow);
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .landing-tagline {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-style: italic;
+      color: var(--text-muted);
+      max-width: 380px;
+      line-height: 1.6;
+      animation: slideUp 0.8s 0.2s ease-out both;
+    }
+
+    .landing-cta {
+      animation: slideUp 0.8s 0.4s ease-out both;
+    }
+
+    /* Decorative petals — pure CSS, no images */
+    .petal {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50% 0 50% 0;
+      background: var(--secondary);
+      opacity: 0;
+      animation: petalFall linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes petalFall {
+      0%   { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.4; }
+      100% { opacity: 0; transform: translateY(100vh) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation — brand only on landing page ───────────────── -->
+  <nav>
+    <a href="index.html" class="nav-brand">Sanora</a>
+  </nav>
+
+  <!-- ── Decorative falling petals (CSS only, 6 petals) ──────────── -->
+  <div class="petal" style="left:8%;  width:8px;  height:8px;  animation-duration:7s;  animation-delay:0s;"></div>
+  <div class="petal" style="left:22%; width:12px; height:12px; animation-duration:9s;  animation-delay:2s;  background:var(--card-pink);"></div>
+  <div class="petal" style="left:50%; width:7px;  height:7px;  animation-duration:8s;  animation-delay:1s;"></div>
+  <div class="petal" style="left:68%; width:10px; height:10px; animation-duration:11s; animation-delay:3s; background:var(--accent);"></div>
+  <div class="petal" style="left:80%; width:9px;  height:9px;  animation-duration:6s;  animation-delay:4s;"></div>
+  <div class="petal" style="left:92%; width:6px;  height:6px;  animation-duration:10s; animation-delay:0.5s; background:var(--card-pink);"></div>
+
+  <!-- ── Hero Section ───────────────────────────────────────────── -->
+  <main>
+    <div class="landing-hero">
+
+      <h1 class="landing-logo">Sanora</h1>
+
+      <p class="landing-tagline">
+        Your personal AI stylist.<br>
+        Outfits curated from your own wardrobe.
+      </p>
+
+      <div class="landing-cta">
+        <button
+          id="get-started-btn"
+          class="btn btn-primary btn-lg"
+          onclick="handleGetStarted()"
+          style="min-width: 200px; font-size: 1.1rem; padding: 1rem 2.5rem;"
+        >
+          Get Started
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── Toast notifications ────────────────────────────────────── -->
+  <div id="toast-container"></div>
+
+  <!-- ── Google Sign-In Modal (identical to original) ───────────── -->
+  <div class="modal-overlay" id="auth-modal" onclick="closeAuthModal(event)">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Welcome to Sanora</h3>
+        <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 3rem 1.5rem;">
+        <p style="margin-bottom: 2rem; color: var(--text-muted);">
+          Sign in to get personalised outfit recommendations<br>from your own wardrobe.
+        </p>
+        <button class="btn btn-outline" style="width: 100%;" onclick="signInWithGoogle()">
+          <!-- Google icon SVG -->
+          <svg style="width:20px;height:20px;margin-right:8px;" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+          </svg>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Scripts (order matters) ───────────────────────────────── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // ── Check if already signed in ────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+      const session = await getSession();
+      if (session) {
+        window.location.href = 'style.html';
+      }
+    });
+
+    // ── After Google sign-in: go to style selection ───────────────
+    // onAuthStateChange listens for Supabase to finish processing the
+    // OAuth tokens from the URL. When SIGNED_IN fires, the session is
+    // ready and we navigate to style.html.
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        window.location.href = 'style.html';
+      }
+    });
+
+    // ── "Get Started" button handler ──────────────────────────────
+    //
+    // Always shows the sign-in modal.
+    // The intended flow is: Landing → Sign In → Style Selection.
+    // After Google OAuth completes, Supabase redirects to style.html
+    // (set in auth.js redirectTo).
+    function handleGetStarted() {
+      handleAuthClick();
+    }
+
+    // ── Auth modal helpers ────────────────────────────────────────
+    function handleAuthClick() {
+      document.getElementById('auth-modal').classList.add('active');
+    }
+
+    function closeAuthModal(e) {
+      // If the event came from clicking the backdrop (not the modal itself),
+      // close it. Also works when called directly (no argument).
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('auth-modal').classList.remove('active');
+    }
+  </script>
+
+</body>
+</html>
