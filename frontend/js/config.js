@@ -21,4 +21,4 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 // eslint-disable-next-line no-unused-vars
 const BACKEND_URL = isLocal 
   ? 'http://localhost:8000' 
-  : 'https://sanora-backend.onrender.com'; // Update this to your actual Render URL after deploying the backend!
+  : 'https://sanora-liaj.onrender.com';
